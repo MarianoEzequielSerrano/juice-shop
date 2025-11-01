@@ -53,7 +53,7 @@ jobs:
         run: docker build -t juice-shop:ci .
 
       - name: Trivy Image scan
-        uses: aquasecurity/trivy-action@0
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: 'juice-shop:ci'
           format: 'table'
