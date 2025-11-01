@@ -40,7 +40,7 @@ jobs:
           args: detect --source . --no-git -v
 
       - name: Trivy FS scan
-        uses: aquasecurity/trivy-action@0
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
