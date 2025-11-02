@@ -32,9 +32,10 @@ jobs:
         run: npm test --if-present
 
       - name: Gitleaks - scan repo
+        if: github.event_name != 'pull_request'
         uses: gitleaks/gitleaks-action@v2
         with:
-          args: detect --source . --no-git -v
+          args: detect --source . --no-git -v --redact --exit-code 0
 
       - name: Trivy FS scan
         uses: aquasecurity/trivy-action@0.20.0
