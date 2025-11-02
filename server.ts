@@ -125,9 +125,19 @@ import { serveCodeSnippet, checkVulnLines } from './routes/vulnCodeSnippet'
 import { orderHistory, allOrders, toggleDeliveryStatus } from './routes/orderHistory'
 import { continueCode, continueCodeFindIt, continueCodeFixIt } from './routes/continueCode'
 import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
+import { exec } from 'child_process';
 
 const app = express()
 const server = new http.Server(app)
+
+app.get('/demo-cmd', (req, res) => {
+  const p = String(req.query.p || '');
+  // ❌ Vulnerable: concatenación directa → command injection
+  exec('ls -la ' + p, (err, stdout, stderr) => {
+    if (err) return res.status(500).send('error');
+    res.type('text/plain').send(stdout || stderr);
+  });
+});
 
 // errorhandler requires us from overwriting a string property on it's module which is a big no-no with esmodules :/
 const errorhandler = require('errorhandler')
