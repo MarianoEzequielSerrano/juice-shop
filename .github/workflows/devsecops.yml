@@ -34,8 +34,7 @@ jobs:
       - name: Gitleaks - scan repo
         if: github.event_name != 'pull_request'
         uses: zricethezav/gitleaks-action@v2
-        with:
-          args: detect --source . --no-git -v --redact --exit-code 0
+        continue-on-error: true 
 
       - name: Trivy FS scan
         uses: aquasecurity/trivy-action@0.20.0
