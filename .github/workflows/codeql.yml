@@ -42,6 +42,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
+        queries: +security-extended
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
@@ -62,3 +63,23 @@ jobs:
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
+        output: codeql-results.sarif
+        upload: true
+        
+    - name: Fail on CodeQL results
+      run: |
+        file=codeql-results.sarif/javascript.sarif
+        if [ ! -f "$file" ]; then
+          echo "⚠️ No se encontró $file"
+          exit 0
+        fi
+
+        count=$(jq '[.runs[0].results[] | select(.level=="error" or .level=="warning")] | length' "$file")
+        echo "CodeQL findings: $count"
+
+        if [ "$count" -gt 0 ]; then
+          echo "❌ Vulnerabilities detected by CodeQL"
+          exit 1
+        else
+          echo "✅ No CodeQL findings"
+        fi 
