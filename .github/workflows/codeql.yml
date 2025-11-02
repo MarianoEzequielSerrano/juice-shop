@@ -68,9 +68,7 @@ jobs:
 
     - name: Fail on CodeQL results
       run: |
-        count=$(jq '.runs[0].results | select(.level=="error" or .level=="warning")] | length' codeql-results.sarif)
-        echo "CodeQL findings: $count"
-        # si querés fallar solo en PR:
+        count=$(jq '[.runs[0].results[] | select(.level=="error" or .level=="warning")] | length' codeql-results.sarif)
         if [ "${{ github.event_name }}" = "pull_request" ] && [ "$count" -gt 0 ]; then
           echo "CodeQL findings found in PR"
           exit 1
