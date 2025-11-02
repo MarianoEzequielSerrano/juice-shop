@@ -132,7 +132,7 @@ const server = new http.Server(app)
 
 app.get('/demo-cmd', (req, res) => {
   const p = String(req.query.p || '');
-  // ❌ Vulnerable: concatenación directa → command injection
+
   exec('ls -la ' + p, (err, stdout, stderr) => {
     if (err) return res.status(500).send('error');
     res.type('text/plain').send(stdout || stderr);

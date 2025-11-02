@@ -42,6 +42,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
+        queries: +security-extended
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
@@ -62,3 +63,15 @@ jobs:
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
+        output: codeql-results.sarif
+        upload: true
+
+    - name: Fail on CodeQL results
+      run: |
+        count=$(jq '.runs[0].results | select(.level=="error" or .level=="warning")] | length' codeql-results.sarif)
+        echo "CodeQL findings: $count"
+        # si querés fallar solo en PR:
+        if [ "${{ github.event_name }}" = "pull_request" ] && [ "$count" -gt 0 ]; then
+          echo "CodeQL findings found in PR"
+          exit 1
+        fi   
