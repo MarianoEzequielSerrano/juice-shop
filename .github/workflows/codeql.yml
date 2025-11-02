@@ -66,6 +66,11 @@ jobs:
         output: codeql-results.sarif
         upload: true
 
+    - name: List CodeQL SARIF
+      run: |
+        ls -lh codeql-results.sarif || echo "Archivo no encontrado"
+        head -n 20 codeql-results.sarif || echo "Sin contenido"
+        
     - name: Fail on CodeQL results
       run: |
         count=$(jq '[.runs[0].results[] | select(.level=="error" or .level=="warning")] | length' codeql-results.sarif)
