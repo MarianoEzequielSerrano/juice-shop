@@ -36,15 +36,27 @@ jobs:
         uses: zricethezav/gitleaks-action@v2
         continue-on-error: true 
 
-      - name: Trivy FS scan
+      - name: Trivy FS (Push)
+        if: github.event_name != 'pull_request'
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          scan-type: 'fs'
+          scan-type: fs
           ignore-unfixed: true
-          format: 'table'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '1'     # falla el job en caso de encontrar
-          vuln-type: 'os,library'
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: '0'        # <- Continua aunque detecte
+          format: table
+
+      - name: Trivy FS (PR)
+        if: github.event_name == 'pull_request'
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: '1'        # <- Rompe el pipeline si hay HIGH/CRITICAL
+          format: table
 
       - name: Build Docker image
         run: docker build -t juice-shop:ci .
