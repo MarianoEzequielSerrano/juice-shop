@@ -65,16 +65,21 @@ jobs:
         category: "/language:${{matrix.language}}"
         output: codeql-results.sarif
         upload: true
-
-    - name: List CodeQL SARIF
-      run: |
-        ls -lh codeql-results.sarif || echo "Archivo no encontrado"
-        head -n 20 codeql-results.sarif || echo "Sin contenido"
         
     - name: Fail on CodeQL results
       run: |
-        count=$(jq '[.runs[0].results[] | select(.level=="error" or .level=="warning")] | length' codeql-results.sarif)
-        if [ "${{ github.event_name }}" = "pull_request" ] && [ "$count" -gt 0 ]; then
-          echo "CodeQL findings found in PR"
+        file=codeql-results.sarif/javascript.sarif
+        if [ ! -f "$file" ]; then
+          echo "⚠️ No se encontró $file"
+          exit 0
+        fi
+
+        count=$(jq '[.runs[0].results[] | select(.level=="error" or .level=="warning")] | length' "$file")
+        echo "CodeQL findings: $count"
+
+        if [ "$count" -gt 0 ]; then
+          echo "❌ Vulnerabilities detected by CodeQL"
           exit 1
-        fi   
+        else
+          echo "✅ No CodeQL findings"
+        fi 
