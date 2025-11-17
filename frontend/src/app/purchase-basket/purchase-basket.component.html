@@ -40,7 +40,7 @@
 
     <ng-container matColumnDef="price">
       <mat-header-cell *matHeaderCellDef style="display: none;"></mat-header-cell>
-      <mat-cell *matCellDef="let element" style="font-size: initial;"> {{element.price}}&curren;</mat-cell>
+      <mat-cell *matCellDef="let element" style="font-size: initial;"> ${{element.price}}</mat-cell>
       <mat-footer-cell *matFooterCellDef></mat-footer-cell>
     </ng-container>
 

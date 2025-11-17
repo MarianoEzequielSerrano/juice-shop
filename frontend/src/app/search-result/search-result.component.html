@@ -43,11 +43,11 @@
                         <div class="item-name">{{item.name}}</div>
                         <div class="item-price">
                           @if (!isDeluxe() || item.price === item.deluxePrice) {
-                            <span>{{item.price}}&curren;</span>
+                            <span>${{item.price}}</span>
                           }
                           @if (isDeluxe() && item.price !== item.deluxePrice) {
                             <span>
-                              <s>{{item.price}}</s> {{ item.deluxePrice }}&curren;
+                              <s>${{item.price}}</s> ${{ item.deluxePrice }}
                             </span>
                           }
                         </div>

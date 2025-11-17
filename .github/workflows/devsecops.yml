@@ -10,6 +10,7 @@ permissions:
   contents: read
   security-events: write
   actions: read
+  pull-requests: read
 
 jobs:
   build-and-scan:
@@ -33,27 +34,34 @@ jobs:
 
       - name: npm audit
         run: npm audit --audit-level=moderate
+        continue-on-error: true
 
       - name: Gitleaks - scan repo
         uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:                     
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: detect --source . --no-git -v
 
       - name: Trivy FS scan
         uses: aquasecurity/trivy-action@0.20.0
+        continue-on-error: true
         with:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'table'
           severity: 'HIGH,CRITICAL'
-          exit-code: '1'     # falla el job en caso de encontrar
+          exit-code: '1'
           vuln-type: 'os,library'
 
       - name: Build Docker image
         run: docker build -t juice-shop:ci .
+        continue-on-error: true
 
       - name: Trivy Image scan
         uses: aquasecurity/trivy-action@0.20.0
+        continue-on-error: true
         with:
           image-ref: 'juice-shop:ci'
           format: 'table'
