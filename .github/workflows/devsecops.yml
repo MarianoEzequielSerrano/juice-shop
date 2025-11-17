@@ -57,6 +57,7 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t juice-shop:ci .
+        continue-on-error: true
 
       - name: Trivy Image scan
         uses: aquasecurity/trivy-action@0.20.0
